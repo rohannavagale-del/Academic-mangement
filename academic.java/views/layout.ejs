@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= title %> - Academic Management System</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-graduation-cap"></i> <%= title %></h1>
+    </header>
+    
+    <nav class="main-nav">
+        <a href="#dashboard" class="nav-item" onclick="showSection('dashboard')">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="#departments" class="nav-item" onclick="showSection('departments')">
+            <i class="fas fa-building"></i> Departments
+        </a>
+        <a href="#programs" class="nav-item" onclick="showSection('programs')">
+            <i class="fas fa-scroll"></i> Programs
+        </a>
+        <a href="#courses" class="nav-item" onclick="showSection('courses')">
+            <i class="fas fa-book"></i> Courses
+        </a>
+        <a href="#students" class="nav-item" onclick="showSection('students')">
+            <i class="fas fa-user-graduate"></i> Students
+        </a>
+        <a href="#faculty" class="nav-item" onclick="showSection('faculty')">
+            <i class="fas fa-chalkboard-teacher"></i> Faculty
+        </a>
+    </nav>
+
+    <main>
+        <%- body %>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; <%= new Date().getFullYear() %> Academic Management System. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
