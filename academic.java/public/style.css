@@ -9,6 +9,14 @@
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
   --background-color: #f3f4f6;
+  
+  /* Tier Colors */
+  --basic-color: #8B4513;
+  --basic-light: #f3e5dc;
+  --pro-color: #C0C0C0;
+  --pro-light: #f0f0f0;
+  --premium-color: #FFD700;
+  --premium-light: #fff8dc;
 }
 
 body {
@@ -90,15 +98,31 @@ header h1 {
 }
 
 .dashboard-card {
-  background: var(--card-background);
+  background: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   text-align: center;
   transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
   position: relative;
   overflow: hidden;
+}
+
+/* Dashboard Tier Cards */
+.dashboard-card.basic {
+  border-color: #8B4513;
+  background: linear-gradient(135deg, white 0%, #f3e5dc 100%);
+}
+
+.dashboard-card.pro {
+  border-color: #C0C0C0;
+  background: linear-gradient(135deg, white 0%, #f5f5f5 100%);
+}
+
+.dashboard-card.premium {
+  border-color: #FFD700;
+  background: linear-gradient(135deg, white 0%, #fff8e7 100%);
 }
 
 .dashboard-card::before {
@@ -108,9 +132,20 @@ header h1 {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--primary-color);
-  opacity: 0;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
+}
+
+.dashboard-card.basic::before {
+  background: #8B4513;
+}
+
+.dashboard-card.pro::before {
+  background: #C0C0C0;
+}
+
+.dashboard-card.premium::before {
+  background: #FFD700;
 }
 
 .dashboard-card:hover {
@@ -176,12 +211,77 @@ header h1 {
 }
 
 .card {
-  background-color: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+/* Tier-based cards */
+.card.basic {
+  border: 3px solid var(--basic-color) !important;
+  background: linear-gradient(135deg, white, var(--basic-light)) !important;
+}
+
+.card.pro {
+  border: 3px solid var(--pro-color) !important;
+  background: linear-gradient(135deg, white, var(--pro-light)) !important;
+}
+
+.card.premium {
+  border: 3px solid var(--premium-color) !important;
+  background: linear-gradient(135deg, white, var(--premium-light)) !important;
+}
+
+.basic .tier-badge {
+  background-color: var(--basic-color);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* Tier badges */
+.tier-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tier-badge.basic {
+  background-color: #8B4513;
+  color: white;
+}
+
+.tier-badge.pro {
+  background-color: #C0C0C0;
+  color: #333;
+}
+
+.tier-badge.premium {
+  background-color: #FFD700;
+  color: #333;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.card.basic {
+  border: 2px solid var(--basic-color);
+  background: linear-gradient(to bottom right, white, rgba(139, 69, 19, 0.1));
+}
+
+.card.pro {
+  border: 2px solid var(--pro-color);
+  background: linear-gradient(to bottom right, white, rgba(192, 192, 192, 0.2));
+}
+
+.card.premium {
+  border: 2px solid var(--premium-color);
+  background: linear-gradient(to bottom right, white, rgba(255, 215, 0, 0.15));
 }
 
 .card:hover {
@@ -492,6 +592,27 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(0,74,173,0.1);
 }
 
+/* Select Input Styles */
+select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: var(--primary-light);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
 /* Footer Styles */
 footer {
   background: var(--card-background);
@@ -553,6 +674,53 @@ header i {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+/* Tier Badge Styles */
+.tier-badge {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tier-badge.basic {
+  background-color: #8B4513;
+  color: white;
+  border: 1px solid #A0522D;
+}
+
+.tier-badge.pro {
+  background-color: #C0C0C0;
+  color: #333;
+  border: 1px solid #D3D3D3;
+}
+
+.tier-badge.premium {
+  background-color: #FFD700;
+  color: #333;
+  border: 1px solid #FFDF4F;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effects for interactive elements */
+.card.basic:hover {
+  border-color: var(--basic-light);
+  box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1);
+}
+
+.card.pro:hover {
+  border-color: var(--pro-light);
+  box-shadow: 0 4px 6px rgba(192, 192, 192, 0.2);
+}
+
+.card.premium:hover {
+  border-color: var(--premium-light);
+  box-shadow: 0 4px 6px rgba(255, 215, 0, 0.2);
 }
 
 /* Responsive Design */
@@ -661,4 +829,84 @@ header i {
   align-items: center;
   gap: 0.5rem;
   animation: slideIn 0.3s ease-out;
+}
+
+/* Enhanced Tier Card Styles */
+.card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Delivery Time Styles */
+.delivery-time {
+  border-top: 1px solid var(--border-color);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  grid-column: 1 / -1;
+}
+
+.delivery-time .label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.delivery-time .value {
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-top: 0.25rem;
+}
+
+.delivery-time i {
+  font-size: 0.9rem;
+}
+
+.card.basic {
+  border: 3px solid #8B4513 !important;
+  background: linear-gradient(135deg, white, #fff5e6) !important;
+}
+
+.card.pro {
+  border: 3px solid #C0C0C0 !important;
+  background: linear-gradient(135deg, white, #f8f8f8) !important;
+}
+
+.card.premium {
+  border: 3px solid #FFD700 !important;
+  background: linear-gradient(135deg, white, #fffdf0) !important;
+}
+
+.tier-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.basic .tier-badge {
+  background-color: #8B4513 !important;
+  color: white !important;
+  border: 1px solid #754011;
+}
+
+.pro .tier-badge {
+  background-color: #C0C0C0 !important;
+  color: #333333 !important;
+  border: 1px solid #A9A9A9;
+}
+
+.premium .tier-badge {
+  background-color: #FFD700 !important;
+  color: #333333 !important;
+  border: 1px solid #FFC800;
 }
