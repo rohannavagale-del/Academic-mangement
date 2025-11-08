@@ -1,0 +1,494 @@
+<!-- Dashboard Section -->
+<section id="dashboard" class="section-content">
+  <div class="section-header">
+    <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+  </div>
+  
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <div class="card-header">
+        <i class="fas fa-building"></i>
+        <h3>Departments</h3>
+      </div>
+      <div class="count"><%= data.departments.length %></div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="label">Active</div>
+          <div class="value"><%= data.departments.length %></div>
+        </div>
+        <div class="stat-item">
+          <div class="label">Programs</div>
+          <div class="value"><%= data.programs.length %></div>
+        </div>
+      </div>
+      <button onclick="showSection('departments')" class="view-all">
+        <i class="fas fa-arrow-right"></i> View Details
+      </button>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Programs</h3>
+      </div>
+      <div class="count"><%= data.programs.length %></div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="label">Active</div>
+          <div class="value"><%= data.programs.length %></div>
+        </div>
+        <div class="stat-item">
+          <div class="label">Students</div>
+          <div class="value"><%= data.students.length %></div>
+        </div>
+      </div>
+      <button onclick="showSection('programs')" class="view-all">
+        <i class="fas fa-arrow-right"></i> View Details
+      </button>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <i class="fas fa-book"></i>
+        <h3>Courses</h3>
+      </div>
+      <div class="count"><%= data.courses.length %></div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="label">Active</div>
+          <div class="value"><%= data.courses.length %></div>
+        </div>
+        <div class="stat-item">
+          <div class="label">Students</div>
+          <div class="value"><%= data.students.length %></div>
+        </div>
+      </div>
+      <button onclick="showSection('courses')" class="view-all">
+        <i class="fas fa-arrow-right"></i> View Details
+      </button>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <i class="fas fa-user-graduate"></i>
+        <h3>Students</h3>
+      </div>
+      <div class="count"><%= data.students.length %></div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="label">Total</div>
+          <div class="value"><%= data.students.length %></div>
+        </div>
+        <div class="stat-item">
+          <div class="label">Programs</div>
+          <div class="value"><%= data.programs.length %></div>
+        </div>
+      </div>
+      <button onclick="showSection('students')" class="view-all">
+        <i class="fas fa-arrow-right"></i> View Details
+      </button>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <h3>Faculty</h3>
+      </div>
+      <div class="count"><%= data.faculty.length %></div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="label">Total</div>
+          <div class="value"><%= data.faculty.length %></div>
+        </div>
+        <div class="stat-item">
+          <div class="label">Departments</div>
+          <div class="value"><%= data.departments.length %></div>
+        </div>
+      </div>
+      <button onclick="showSection('faculty')" class="view-all">
+        <i class="fas fa-arrow-right"></i> View Details
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Departments Section -->
+<section id="departments" class="section-content" style="display: none;">
+  <div class="section-header">
+    <h2><i class="fas fa-building"></i> Departments</h2>
+  </div>
+  <div class="cards-grid">
+    <% if (data.departments.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-building"></i>
+        <p>No departments added yet. Add your first department!</p>
+      </div>
+    <% } %>
+    <% data.departments.forEach(dept => { %>
+      <div class="card" id="department-<%= dept.id %>" data-tier="<%= dept.tier %>">
+        <div class="content">
+          <div class="card-header">
+            <i class="fas fa-building"></i>
+            <h3><%= dept.name %></h3>
+          </div>
+          <div class="tier-badge <%= dept.tier %>"><%= dept.tier %></div>
+          <div class="card-stats">
+            <div class="stat-item">
+              <div class="label">Programs</div>
+              <div class="value"><%= data.programs.filter(p => p.departmentId === dept.id).length || 0 %></div>
+            </div>
+            <div class="stat-item">
+              <div class="label">Faculty</div>
+              <div class="value"><%= data.faculty.filter(f => f.departmentId === dept.id).length || 0 %></div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="edit-btn" data-id="<%= dept.id %>" data-name="<%= dept.name %>" data-type="department" onclick="showEditForm(this.dataset.id, this.dataset.name, this.dataset.type)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <form action="/departments/<%= dept.id %>/delete" method="post" style="display: inline;">
+              <button type="submit" class="delete-btn">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+        <form action="/departments/<%= dept.id %>/edit" method="post" class="edit-form" style="display: none;">
+          <div class="form-group">
+            <input type="text" name="name" value="<%= dept.name %>" required placeholder="Department Name">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-check"></i> Save
+            </button>
+            <button type="button" class="cancel-btn" data-id="<%= dept.id %>" data-type="department" onclick="hideEditForm(this.dataset.id, this.dataset.name, this.dataset.type)">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    <% }) %>
+    <div class="add-card">
+      <div class="card">
+        <form action="/departments" method="post">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="New Department Name" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-plus"></i> Add Department
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Programs Section -->
+<section id="programs" class="section-content" style="display: none;">
+  <div class="section-header">
+    <h2><i class="fas fa-graduation-cap"></i> Programs</h2>
+  </div>
+  <div class="cards-grid">
+    <% if (!data.programs || data.programs.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-graduation-cap"></i>
+        <p>No programs added yet. Add your first program!</p>
+      </div>
+    <% } else { %>
+      <% data.programs.forEach(program => { %>
+        <div class="card" id="program-<%= program.id %>">
+          <div class="content">
+            <div class="card-header">
+              <i class="fas fa-graduation-cap"></i>
+              <h3><%= program.name %></h3>
+            </div>
+            <div class="card-stats">
+              <div class="stat-item">
+                <div class="label">Department</div>
+                <div class="value"><%= (data.departments.find(d => d.id === program.departmentId) || {}).name || 'N/A' %></div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Students</div>
+                <div class="value"><%= data.students.filter(s => s.programId === program.id).length || 0 %></div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="edit-btn" data-id="<%= program.id %>" data-name="<%= program.name %>" data-type="program" onclick="showEditForm(this.dataset.id, this.dataset.name, this.dataset.type)">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <form action="/programs/<%= program.id %>/delete" method="post" style="display: inline;">
+                <button type="submit" class="delete-btn">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+              </form>
+            </div>
+          </div>
+          <form action="/programs/<%= program.id %>/edit" method="post" class="edit-form" style="display: none;">
+            <div class="form-group">
+              <input type="text" name="name" value="<%= program.name %>" required placeholder="Program Name">
+            </div>
+            <div class="form-group">
+              <select name="departmentId" required>
+                <option value="">Select Department</option>
+                <% data.departments.forEach(department => { %>
+                  <option value="<%= department.id %>" <%= program.departmentId === department.id ? 'selected' : '' %>><%= department.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="save-btn">
+                <i class="fas fa-check"></i> Save
+              </button>
+              <button type="button" class="cancel-btn" data-id="<%= program.id %>" data-type="program" onclick="hideEditForm(this.dataset.id, this.dataset.type)">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      <% }) %>
+    <% } %>
+    <div class="add-card">
+      <div class="card">
+        <form action="/programs" method="post">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="New Program Name" required>
+          </div>
+          <div class="form-group">
+            <select name="departmentId" required>
+              <option value="">Select Department</option>
+              <% data.departments.forEach(department => { %>
+                <option value="<%= department.id %>"><%= department.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-plus"></i> Add Program
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Students Section -->
+<section id="students" class="section-content" style="display: none;">
+  <div class="section-header">
+    <h2><i class="fas fa-user-graduate"></i> Students</h2>
+  </div>
+  <div class="cards-grid">
+    <% if (!data.students || data.students.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-user-graduate"></i>
+        <p>No students added yet. Add your first student!</p>
+      </div>
+    <% } %>
+    <% data.students.forEach(student => { %>
+      <div class="card" id="student-<%= student.id %>">
+        <div class="content">
+          <div class="card-header">
+            <i class="fas fa-user-graduate"></i>
+            <h3><%= student.name %></h3>
+          </div>
+          <div class="card-stats">
+            <div class="stat-item">
+              <div class="label">Program</div>
+              <div class="value"><%= (data.programs.find(p => p.id === student.programId) || {}).name || 'N/A' %></div>
+            </div>
+            <div class="stat-item">
+              <div class="label">Courses</div>
+              <div class="value"><%= data.enrollments.filter(e => e.studentId === student.id).length || 0 %></div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="edit-btn" data-id="<%= student.id %>" data-name="<%= student.name %>" data-type="student" onclick="showEditForm(this.dataset.id, this.dataset.name, this.dataset.type)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <form action="/students/<%= student.id %>/delete" method="post" style="display: inline;">
+              <button type="submit" class="delete-btn">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+        <form action="/students/<%= student.id %>/edit" method="post" class="edit-form" style="display: none;">
+          <div class="form-group">
+            <input type="text" name="name" value="<%= student.name %>" required placeholder="Student Name">
+          </div>
+          <div class="form-group">
+            <select name="programId" required>
+              <option value="">Select Program</option>
+              <% data.programs.forEach(program => { %>
+                <option value="<%= program.id %>" <%= student.programId === program.id ? 'selected' : '' %>><%= program.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-check"></i> Save
+            </button>
+            <button type="button" class="cancel-btn" data-id="<%= student.id %>" data-type="student" onclick="hideEditForm(this.dataset.id, this.dataset.type)">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    <% }) %>
+    <div class="add-card">
+      <div class="card">
+        <form action="/students" method="post">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="New Student Name" required>
+          </div>
+          <div class="form-group">
+            <select name="programId" required>
+              <option value="">Select Program</option>
+              <% data.programs.forEach(program => { %>
+                <option value="<%= program.id %>"><%= program.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-plus"></i> Add Student
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Faculty Section -->
+<section id="faculty" class="section-content" style="display: none;">
+  <div class="section-header">
+    <h2><i class="fas fa-chalkboard-teacher"></i> Faculty</h2>
+  </div>
+  <div class="cards-grid">
+    <% if (!data.faculty || data.faculty.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <p>No faculty added yet. Add your first faculty member!</p>
+      </div>
+    <% } %>
+    <% data.faculty.forEach(faculty => { %>
+      <div class="card" id="faculty-<%= faculty.id %>">
+        <div class="content">
+          <div class="card-header">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h3><%= faculty.name %></h3>
+          </div>
+          <div class="card-stats">
+            <div class="stat-item">
+              <div class="label">Department</div>
+              <div class="value"><%= (data.departments.find(d => d.id === faculty.departmentId) || {}).name || 'N/A' %></div>
+            </div>
+            <div class="stat-item">
+              <div class="label">Courses</div>
+              <div class="value"><%= data.courses.filter(c => c.facultyId === faculty.id).length || 0 %></div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="edit-btn" data-id="<%= faculty.id %>" data-name="<%= faculty.name %>" data-type="faculty" onclick="showEditForm(this.dataset.id, this.dataset.name, this.dataset.type)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <form action="/faculty/<%= faculty.id %>/delete" method="post" style="display: inline;">
+              <button type="submit" class="delete-btn">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+        <form action="/faculty/<%= faculty.id %>/edit" method="post" class="edit-form" style="display: none;">
+          <div class="form-group">
+            <input type="text" name="name" value="<%= faculty.name %>" required placeholder="Faculty Name">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-check"></i> Save
+            </button>
+            <button type="button" class="cancel-btn" data-id="<%= faculty.id %>" data-type="faculty" onclick="hideEditForm(this.dataset.id, this.dataset.type)">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    <% }) %>
+    <div class="add-card">
+      <div class="card">
+        <form action="/faculty" method="post">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="New Faculty Name" required>
+          </div>
+          <div class="form-group">
+            <select name="departmentId" required>
+              <option value="">Select Department</option>
+              <% data.departments.forEach(department => { %>
+                <option value="<%= department.id %>"><%= department.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              <i class="fas fa-plus"></i> Add Faculty
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Show/hide sections when clicking navigation
+function showSection(sectionId) {
+  // Hide all sections
+  document.querySelectorAll('.section-content').forEach(section => {
+    section.style.display = 'none';
+  });
+  
+  // Show selected section
+  document.getElementById(sectionId).style.display = 'block';
+  
+  // Update active nav item
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelector(`[href="#${sectionId}"]`).classList.add('active');
+  
+  // Update URL hash
+  window.location.hash = sectionId;
+}
+
+// Handle browser back/forward
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.slice(1) || 'dashboard';
+  showSection(hash);
+});
+
+// Show initial section based on URL hash
+window.addEventListener('load', () => {
+  const hash = window.location.hash.slice(1) || 'dashboard';
+  showSection(hash);
+});
+
+function showEditForm(id, currentName, section) {
+  const card = document.querySelector(`#${section}-${id}`);
+  if (card) {
+    card.querySelector('.content').style.display = 'none';
+    card.querySelector('.edit-form').style.display = 'block';
+    card.querySelector('.edit-form input[name="name"]').value = currentName;
+  }
+}
+
+function hideEditForm(id, section) {
+  const card = document.querySelector(`#${section}-${id}`);
+  if (card) {
+    card.querySelector('.content').style.display = 'block';
+    card.querySelector('.edit-form').style.display = 'none';
+  }
+}
+</script>

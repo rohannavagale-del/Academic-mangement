@@ -1,0 +1,438 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+
+/**
+ * Passenger class to store passenger details
+ */
+class Passenger {
+    private String name;
+    private int age;
+    private String flightNumber;
+    private LocalDateTime departureTime;
+    
+    public Passenger(String name, int age, String flightNumber, LocalDateTime departureTime) {
+        this.name = name;
+        this.age = age;
+        this.flightNumber = flightNumber;
+        this.departureTime = departureTime;
+    }
+    
+    // Getters
+    public String getName() { return name; }
+    public int getAge() { return age; }
+    public String getFlightNumber() { return flightNumber; }
+    public LocalDateTime getDepartureTime() { return departureTime; }
+    
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return String.format("Name: %s, Age: %d, Flight: %s, Departure: %s",
+                name, age, flightNumber, departureTime.format(formatter));
+    }
+}
+
+/**
+ * Flight class to store flight details
+ */
+class Flight {
+    private String flightNumber;
+    private LocalDateTime departureTime;
+    private String destination;
+    private int availableSeats;
+    
+    public Flight(String flightNumber, LocalDateTime departureTime, String destination, int availableSeats) {
+        this.flightNumber = flightNumber;
+        this.departureTime = departureTime;
+        this.destination = destination;
+        this.availableSeats = availableSeats;
+    }
+    
+    // Getters and Setters
+    public String getFlightNumber() { return flightNumber; }
+    public LocalDateTime getDepartureTime() { return departureTime; }
+    public String getDestination() { return destination; }
+    public int getAvailableSeats() { return availableSeats; }
+    
+    public void decrementSeats() {
+        if (availableSeats > 0) {
+            availableSeats--;
+        }
+    }
+    
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return String.format("Flight: %s | Destination: %s | Departure: %s | Available Seats: %d",
+                flightNumber, destination, departureTime.format(formatter), availableSeats);
+    }
+}
+
+/**
+ * Node class for Binary Search Tree
+ */
+class BSTNode {
+    Flight flight;
+    BSTNode left;
+    BSTNode right;
+    
+    public BSTNode(Flight flight) {
+        this.flight = flight;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+/**
+ * Binary Search Tree implementation for storing flights sorted by departure time
+ */
+class FlightBST {
+    private BSTNode root;
+    
+    public FlightBST() {
+        this.root = null;
+    }
+    
+    /**
+     * Insert a flight into the BST
+     */
+    public void insert(Flight flight) {
+        root = insertRec(root, flight);
+    }
+    
+    /**
+     * Recursive helper method to insert a flight
+     */
+    private BSTNode insertRec(BSTNode root, Flight flight) {
+        // Base case: empty tree
+        if (root == null) {
+            return new BSTNode(flight);
+        }
+        
+        // Compare departure times and insert in appropriate subtree
+        if (flight.getDepartureTime().isBefore(root.flight.getDepartureTime())) {
+            root.left = insertRec(root.left, flight);
+        } else {
+            root.right = insertRec(root.right, flight);
+        }
+        
+        return root;
+    }
+    
+    /**
+     * Search for a flight by flight number and departure time
+     */
+    public Flight search(String flightNumber, LocalDateTime departureTime) {
+        return searchRec(root, flightNumber, departureTime);
+    }
+    
+    /**
+     * Recursive helper method to search for a flight
+     */
+    private Flight searchRec(BSTNode root, String flightNumber, LocalDateTime departureTime) {
+        if (root == null) {
+            return null;
+        }
+        
+        // Check if current node matches
+        if (root.flight.getFlightNumber().equals(flightNumber) && 
+            root.flight.getDepartureTime().equals(departureTime)) {
+            return root.flight;
+        }
+        
+        // Search in appropriate subtree based on departure time
+        if (departureTime.isBefore(root.flight.getDepartureTime())) {
+            return searchRec(root.left, flightNumber, departureTime);
+        } else {
+            return searchRec(root.right, flightNumber, departureTime);
+        }
+    }
+    
+    /**
+     * In-order traversal to get flights sorted by departure time
+     */
+    public List<Flight> inOrderTraversal() {
+        List<Flight> flights = new ArrayList<>();
+        inOrderRec(root, flights);
+        return flights;
+    }
+    
+    /**
+     * Recursive helper for in-order traversal
+     */
+    private void inOrderRec(BSTNode root, List<Flight> flights) {
+        if (root != null) {
+            inOrderRec(root.left, flights);
+            flights.add(root.flight);
+            inOrderRec(root.right, flights);
+        }
+    }
+    
+    /**
+     * Get upcoming flights (after current time) in sorted order
+     */
+    public List<Flight> getUpcomingFlights() {
+        List<Flight> allFlights = inOrderTraversal();
+        List<Flight> upcomingFlights = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        
+        for (Flight flight : allFlights) {
+            if (flight.getDepartureTime().isAfter(now)) {
+                upcomingFlights.add(flight);
+            }
+        }
+        
+        return upcomingFlights;
+    }
+}
+
+/**
+ * ReservationSystem class - Core system managing tickets and flights
+ * Uses HashMap for O(1) ticket lookup and BST for sorted flight retrieval
+ */
+class ReservationSystem {
+    // HashMap to store tickets: TicketID -> Passenger (O(1) lookup)
+    private HashMap<String, Passenger> ticketMap;
+    
+    // Binary Search Tree to store flights sorted by departure time
+    private FlightBST flightBST;
+    
+    // Counter for generating unique ticket IDs
+    private int ticketCounter;
+    
+    public ReservationSystem() {
+        ticketMap = new HashMap<>();
+        flightBST = new FlightBST();
+        ticketCounter = 1000;
+        
+        // Initialize with some sample flights
+        initializeSampleFlights();
+    }
+    
+    /**
+     * Initialize system with sample flights
+     */
+    private void initializeSampleFlights() {
+        LocalDateTime now = LocalDateTime.now();
+        
+        // Add flights to BST in random order to test BST sorting
+        flightBST.insert(new Flight("AI303", now.plusHours(6), "Tokyo", 180));
+        flightBST.insert(new Flight("AI101", now.plusHours(2), "New York", 150));
+        flightBST.insert(new Flight("AI505", now.plusHours(10), "Singapore", 190));
+        flightBST.insert(new Flight("AI202", now.plusHours(4), "London", 200));
+        flightBST.insert(new Flight("AI404", now.plusHours(8), "Dubai", 220));
+    }
+    
+    /**
+     * Book a ticket for a passenger
+     * Assigns unique TicketID, stores in HashMap, and flight info is in BST
+     */
+    public String bookTicket(String name, int age, String flightNumber, LocalDateTime departureTime) {
+        // Search for the flight in BST
+        Flight flight = flightBST.search(flightNumber, departureTime);
+        
+        if (flight == null) {
+            return "ERROR: Flight not found with given flight number and departure time.";
+        }
+        
+        if (flight.getAvailableSeats() <= 0) {
+            return "ERROR: No seats available on this flight.";
+        }
+        
+        // Generate unique ticket ID
+        String ticketId = "TKT" + (ticketCounter++);
+        
+        // Create passenger object
+        Passenger passenger = new Passenger(name, age, flightNumber, departureTime);
+        
+        // Store in HashMap for O(1) lookup
+        ticketMap.put(ticketId, passenger);
+        
+        // Decrement available seats
+        flight.decrementSeats();
+        
+        return ticketId;
+    }
+    
+    /**
+     * Search for a ticket by ID using HashMap (O(1) operation)
+     */
+    public String searchTicket(String ticketId) {
+        Passenger passenger = ticketMap.get(ticketId);
+        
+        if (passenger == null) {
+            return "Ticket not found with ID: " + ticketId;
+        }
+        
+        return String.format("Ticket ID: %s\n%s", ticketId, passenger.toString());
+    }
+    
+    /**
+     * Display next flights sorted by departure time using BST in-order traversal
+     */
+    public void nextFlights() {
+        List<Flight> upcomingFlights = flightBST.getUpcomingFlights();
+        
+        System.out.println("\n========== UPCOMING FLIGHTS (BST In-Order Traversal) ==========");
+        
+        if (upcomingFlights.isEmpty()) {
+            System.out.println("No upcoming flights available.");
+        } else {
+            for (Flight flight : upcomingFlights) {
+                System.out.println(flight);
+            }
+        }
+        
+        System.out.println("===============================================================\n");
+    }
+    
+    /**
+     * Get all upcoming flights for display during booking
+     */
+    public List<Flight> getAvailableFlights() {
+        return flightBST.getUpcomingFlights();
+    }
+}
+
+/**
+ * Main class with console menu
+ */
+public class Main {
+    private static Scanner scanner = new Scanner(System.in);
+    private static ReservationSystem reservationSystem = new ReservationSystem();
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    
+    public static void main(String[] args) {
+        System.out.println("╔════════════════════════════════════════════╗");
+        System.out.println("║  AIRLINE TICKET RESERVATION SYSTEM        ║");
+        System.out.println("║  Using HashMap + Binary Search Tree       ║");
+        System.out.println("╚════════════════════════════════════════════╝");
+        
+        boolean running = true;
+        
+        while (running) {
+            displayMenu();
+            int choice = getIntInput("Enter your choice: ");
+            
+            switch (choice) {
+                case 1:
+                    handleBookTicket();
+                    break;
+                case 2:
+                    handleSearchTicket();
+                    break;
+                case 3:
+                    reservationSystem.nextFlights();
+                    break;
+                case 4:
+                    System.out.println("\nThank you for using the Airline Reservation System!");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("\n❌ Invalid choice. Please try again.\n");
+            }
+        }
+        
+        scanner.close();
+    }
+    
+    /**
+     * Display the main menu
+     */
+    private static void displayMenu() {
+        System.out.println("┌────────────────────────────────────────────┐");
+        System.out.println("│              MAIN MENU                     │");
+        System.out.println("├────────────────────────────────────────────┤");
+        System.out.println("│  1. Book Ticket                            │");
+        System.out.println("│  2. Search Ticket by ID                    │");
+        System.out.println("│  3. View Next Flights                      │");
+        System.out.println("│  4. Exit                                   │");
+        System.out.println("└────────────────────────────────────────────┘");
+    }
+    
+    /**
+     * Handle ticket booking
+     */
+    private static void handleBookTicket() {
+        System.out.println("\n========== BOOK TICKET ==========");
+        
+        // Display available flights first (from BST in sorted order)
+        List<Flight> flights = reservationSystem.getAvailableFlights();
+        
+        if (flights.isEmpty()) {
+            System.out.println("No flights available for booking.\n");
+            return;
+        }
+        
+        System.out.println("\nAvailable Flights (Sorted by Departure Time):");
+        for (int i = 0; i < flights.size(); i++) {
+            System.out.println((i + 1) + ". " + flights.get(i));
+        }
+        
+        // Get passenger details
+        System.out.print("\nEnter passenger name: ");
+        String name = scanner.nextLine().trim();
+        
+        if (name.isEmpty()) {
+            System.out.println("❌ Name cannot be empty.\n");
+            return;
+        }
+        
+        int age = getIntInput("Enter passenger age: ");
+        
+        if (age <= 0 || age > 120) {
+            System.out.println("❌ Invalid age.\n");
+            return;
+        }
+        
+        System.out.print("Enter flight number: ");
+        String flightNumber = scanner.nextLine().trim().toUpperCase();
+        
+        System.out.print("Enter departure time (yyyy-MM-dd HH:mm): ");
+        String departureTimeStr = scanner.nextLine().trim();
+        
+        try {
+            LocalDateTime departureTime = LocalDateTime.parse(departureTimeStr, formatter);
+            
+            String result = reservationSystem.bookTicket(name, age, flightNumber, departureTime);
+            
+            if (result.startsWith("ERROR")) {
+                System.out.println("\n❌ " + result + "\n");
+            } else {
+                System.out.println("\n✅ Ticket booked successfully!");
+                System.out.println("Your Ticket ID: " + result);
+                System.out.println("Please save this ID for future reference.\n");
+            }
+        } catch (DateTimeParseException e) {
+            System.out.println("\n❌ Invalid date format. Please use yyyy-MM-dd HH:mm\n");
+        }
+    }
+    
+    /**
+     * Handle ticket search using HashMap
+     */
+    private static void handleSearchTicket() {
+        System.out.println("\n========== SEARCH TICKET (HashMap Lookup) ==========");
+        System.out.print("Enter Ticket ID: ");
+        String ticketId = scanner.nextLine().trim().toUpperCase();
+        
+        String result = reservationSystem.searchTicket(ticketId);
+        System.out.println("\n" + result + "\n");
+    }
+    
+    /**
+     * Utility method to get integer input with error handling
+     */
+    private static int getIntInput(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String input = scanner.nextLine().trim();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Please enter a valid number.");
+            }
+        }
+    }
+}
